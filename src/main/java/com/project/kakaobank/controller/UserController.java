@@ -24,6 +24,7 @@ public class UserController {
                 .password(userDto.getPassword())
                 .address(userDto.getAddress())
                 .percentage(userDto.getPercentage())
+                .fileUploadYN("N")
                 .build();
         userService.save(user);
     }

@@ -3,8 +3,11 @@ package com.project.kakaobank.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.bytebuddy.implementation.bytecode.constant.DefaultValue;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -28,15 +31,20 @@ public class User {
     private String address;
     @Column(nullable = false)
     private int percentage;
+
+    @Setter
+    private String fileUploadYN;
     @CreatedDate
     private LocalDateTime createDateTime;
 
 
-    @Builder User(String name, String email, String password, String address, int percentage){
+    @Builder User(String name, String email, String password, String address, int percentage, String fileUploadYN){
         this.name = name;
         this.email = email;
         this.password = password;
         this.address = address;
         this.percentage = percentage;
+        this.fileUploadYN = fileUploadYN;
     }
+
 }

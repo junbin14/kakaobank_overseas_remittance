@@ -1,5 +1,6 @@
 package com.project.kakaobank.domain;
 
+import com.sun.istack.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,9 +30,12 @@ public class Remit {
     private int exchangeRate;
     @Column(nullable = false)
     private BigDecimal totalAmount;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "senderId", referencedColumnName = "id")
-    private User user;
+
+    @Column(nullable = false)
+    private Long senderId;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(nullable = false, name = "senderId", referencedColumnName = "id")
+//    private User user;
     @Column(nullable = false)
     private Long senderAccountNumber;
     @Column(nullable = false)
@@ -51,6 +55,7 @@ public class Remit {
                    String targetCurrency,
                    BigDecimal foreignAmount,
                    int exchangeRate,
+                   Long senderId,
                    BigDecimal totalAmount,
                    Long senderAccountNumber,
                    String receiverName,
@@ -58,7 +63,7 @@ public class Remit {
                    String receiverEmail,
                    String receiverAddress){
 
-        this.user = user;
+        this.senderId = senderId;
         this.targetCountry = targetCountry;
         this.targetCurrency = targetCurrency;
         this.foreignAmount = foreignAmount;

@@ -7,20 +7,20 @@ import com.project.kakaobank.domain.RemitDto;
 import com.project.kakaobank.service.RemitService;
 import com.project.kakaobank.domain.User;
 import com.project.kakaobank.service.UserService;
-import lombok.Builder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 public class RemitController {
     private final RemitService remitService;
     private final UserService userService;
     private final AccountService accountService;
-
+    @Autowired
     public RemitController(RemitService remitService, UserService userService, AccountService accountService) {
         this.remitService = remitService;
         this.userService = userService;
@@ -30,6 +30,7 @@ public class RemitController {
     @PostMapping("/remit")
     @ResponseBody
     public void remit(@RequestBody RemitDto remitDto) throws Exception {
+        LocalDateTime now = LocalDateTime.now();
         User user = userService.findByEmail(remitDto.getUserEmail());
         Account account = accountService.findByAccountNumber(remitDto.getSenderAccountNumber());
 
@@ -64,7 +65,7 @@ public class RemitController {
                 .foreignAmount(remitDto.getForeignAmount())
                 .exchangeRate(exchangeRate)
                 .totalAmount(total)
-                .user(user)
+                .senderId(user.getId())
                 .senderAccountNumber(remitDto.getSenderAccountNumber())
                 .receiverName(remitDto.getReceiverName())
                 .receiverAccountNumber(remitDto.getReceiverAccountNumber())
@@ -72,5 +73,11 @@ public class RemitController {
                 .receiverAddress(remitDto.getReceiverAddress())
                 .build();
         remitService.save(remit);
+    }
+
+    @GetMapping("/remit/history")
+    @ResponseBody
+    public List<Remit> remitHistory(@RequestParam(value = "sender_id")Long id){
+        return remitService.findAllBySenderId3MonthBefore(id);
     }
 }
