@@ -7,9 +7,9 @@ import com.project.kakaobank.domain.User;
 import com.project.kakaobank.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 
 @Controller
 public class AccountController {
@@ -32,5 +32,20 @@ public class AccountController {
                 .accountNumber(accountDto.getAccountNumber())
                 .build();
         accountService.save(account);
+    }
+
+    @GetMapping("/account/balance/check")
+    @ResponseBody
+    public BigDecimal balanceCheck(@RequestParam(value = "userId")Long userId, @RequestParam(value = "accountNumber")Long accountNumber) throws Exception{
+        Account account = accountService.findByAccountNumber(accountNumber);
+        System.out.println(account.getUser().getId());
+        System.out.println(userId);
+
+        if (account.getUser().getId().equals(userId)){
+            return account.getBalance();
+
+        } else {
+            throw new Exception("accont.getUser().getId() is different from userId");
+        }
     }
 }

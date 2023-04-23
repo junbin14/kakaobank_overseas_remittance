@@ -40,23 +40,42 @@ public class RemitController {
         }
 
         BigDecimal totalAmount = remitDto.getForeignAmount().multiply(BigDecimal.valueOf(exchangeRate+((long) (exchangeRate / 10) *(100-user.getPercentage())/100)));
-        System.out.println(totalAmount);
         BigDecimal total;
-        int compareTarget = remitDto.getForeignAmount().compareTo(BigDecimal.valueOf(5000));
 
-        if (compareTarget < 0) {
+        if (remitDto.getForeignAmount().compareTo(BigDecimal.valueOf(5000)) < 0) {
             total = totalAmount.add(BigDecimal.valueOf(5000));
-        } else {
+
+            System.out.println(remitDto.getForeignAmount());
+            System.out.println(user.getTotalRemittanceAmount().add(remitDto.getForeignAmount()));
+
+            if(user.getTotalRemittanceAmount().add(remitDto.getForeignAmount()).compareTo(BigDecimal.valueOf(50000))>0) {
+                throw new Exception("Total remittances in one year exceed $50,000");
+            }
+
+        } else if (user.getFileUploadYN().equals("Y")){
             total = totalAmount.add(BigDecimal.valueOf(10000));
+
+            System.out.println(remitDto.getForeignAmount());
+            System.out.println(user.getTotalRemittanceAmount().add(remitDto.getForeignAmount()));
+
+            if(user.getTotalRemittanceAmount().add(remitDto.getForeignAmount()).compareTo(BigDecimal.valueOf(50000))>0){
+                throw new Exception("Total remittances in 1 year exceed $50,000");
+            }
+
+        } else {
+            throw new Exception("no supporting documents");
         }
-        System.out.println(total);
 
         if (account.getBalance().compareTo(total)>=0){
             account.setBalance(account.getBalance().subtract(total));
+
         } else {
-            throw new Exception("잔액부족");
+            throw new Exception("insufficient balance");
         }
 
+        user.setTotalRemittanceAmount(user.getTotalRemittanceAmount().add(remitDto.getForeignAmount()));
+
+        userService.save(user);
         accountService.save(account);
         
         Remit remit = Remit.builder()
@@ -78,6 +97,6 @@ public class RemitController {
     @GetMapping("/remit/history")
     @ResponseBody
     public List<Remit> remitHistory(@RequestParam(value = "sender_id")Long id){
-        return remitService.findAllBySenderId3MonthBefore(id);
+        return remitService.findBySenderIdByThreeMonthsAgoAfter(id);
     }
 }

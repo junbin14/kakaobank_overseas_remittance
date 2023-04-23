@@ -24,7 +24,7 @@ public class Files {
     private User user;
     private String filePath;
     @CreatedDate
-    private LocalDateTime createDateTime;
+    private LocalDateTime createdDate;
 
     @Builder
     public Files(User user, String filePath){

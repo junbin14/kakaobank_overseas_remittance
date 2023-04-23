@@ -31,7 +31,7 @@ public class Account {
     @Column(nullable = false)
     private Long accountNumber;
     @CreatedDate
-    private LocalDateTime createDateTime;
+    private LocalDateTime createdDate;
 
 
     @Builder

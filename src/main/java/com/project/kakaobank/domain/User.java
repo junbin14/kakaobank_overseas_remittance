@@ -5,11 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.bytebuddy.implementation.bytecode.constant.DefaultValue;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,11 +33,12 @@ public class User {
     private String address;
     @Column(nullable = false)
     private int percentage;
-
+    @Setter
+    private BigDecimal totalRemittanceAmount;
     @Setter
     private String fileUploadYN;
     @CreatedDate
-    private LocalDateTime createDateTime;
+    private LocalDateTime createdDate;
 
 
     @Builder User(String name, String email, String password, String address, int percentage, String fileUploadYN){
@@ -44,6 +47,7 @@ public class User {
         this.password = password;
         this.address = address;
         this.percentage = percentage;
+        this.totalRemittanceAmount = BigDecimal.ZERO;
         this.fileUploadYN = fileUploadYN;
     }
 

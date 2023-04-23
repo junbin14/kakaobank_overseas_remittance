@@ -47,7 +47,7 @@ public class Remit {
     @Column(nullable = false)
     private String receiverAddress;
     @CreatedDate
-    private LocalDateTime createDateTime;
+    private LocalDateTime createdDate;
 
 
     @Builder Remit(User user,

@@ -20,6 +20,7 @@ public class FileUploadYNController {
     }
 
     @PostMapping("/files/upload")
+    @ResponseBody
     public String create(@RequestParam("multiPartfiles")List<MultipartFile> multipartfiles,
                          @RequestParam("email")String email) throws Exception {
         fileUploadYNService.save(multipartfiles, email);

@@ -1,14 +1,12 @@
 package com.project.kakaobank.service;
 
+import com.project.kakaobank.domain.RecentReceiverInfoDto;
 import com.project.kakaobank.domain.Remit;
-import com.project.kakaobank.domain.User;
 import com.project.kakaobank.repository.RemitRepository;
-import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +23,32 @@ public class RemitService {
     public void save(Remit remit){
         remitRepository.save(remit);
     }
-    public List<Remit> findAllBySenderId3MonthBefore(Long senderId){
-        LocalDateTime now = LocalDateTime.now();
-        List<Remit> remits = remitRepository.findAllBySenderId(senderId);
-        for (int i = 0; i < remits.size(); i++) {
-            if (remits.get(i).getCreateDateTime().isBefore(now.minusMonths(3))){
-                remits.remove(remits.get(i));
-            }
+    public List<Remit> findBySenderIdByThreeMonthsAgoAfter(Long senderId){
+        return remitRepository.findBySenderIdAndCreatedDateAfterOrderByCreatedDateDesc(senderId, LocalDateTime.now().minusMonths(3));
+    }
+    public List<RecentReceiverInfoDto> findRecentReceiverInfo(Long senderId){
+        List<Remit> remits = remitRepository.findTop10BySenderIdOrderByCreatedDateDesc(senderId);
+        List<RecentReceiverInfoDto> infoDtos = new ArrayList<>();
+
+        for (int i = 0; i < remits.size(); i++){
+            RecentReceiverInfoDto infoDto = new RecentReceiverInfoDto();
+            infoDto.setReceiverName(remits.get(i).getReceiverName());
+            infoDto.setReceiverEmail(remits.get(i).getReceiverEmail());
+            infoDto.setReceiverAccountNumber(remits.get(i).getReceiverAccountNumber());
+            infoDto.setReceiverAddress(remits.get(i).getReceiverAddress());
+            infoDto.setCreatedDate(remits.get(i).getCreatedDate());
+            infoDtos.add(infoDto);
         }
-        return remits;
+
+        return infoDtos;
+
+//        for (int i = 0; i < remits.size(); i++){
+//
+//            for (int j = 0; j < i; j++){
+//                if (remits.get(i).getReceiverEmail().equals(remits.get(j).getReceiverEmail())){
+//                    remits.remove(j);
+//                }
+//            }
+//        }
     }
 }
